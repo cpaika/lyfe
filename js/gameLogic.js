@@ -1,5 +1,5 @@
 //Lists of constants that should only be modified in the source code
-var UPDATE_INTERVAL = 500;
+var UPDATE_INTERVAL = 1000;
 
 
 //lists of global state for testing
@@ -20,12 +20,27 @@ function startGame()
 
 function update()
 {
+	drawRects();
+}
+
+function drawRects()
+{
+	var x = 0;
+	var y = 0;
 	var c = document.getElementById("theCanvas");
 	var ctx = c.getContext("2d");
-	ctx.fillStyle = "#000000";
-	ctx.fillRect(x,y,x+150,y+75);
-	x += 5;
-	y += 5;
+	ctx.fillStyle = "#FF0000";
+	while(x < c.width)
+	{
+		ctx.fillStyle = "#FF0000";
+		while(y < c.height)
+		{
+			ctx.fillRect(x,y,x+10,y+10);
+			y = y + 10;
+		}
+		y = 0;
+		x = x + 10;
+	}
 }
 
 function goFullScreen(i)
