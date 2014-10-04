@@ -1,5 +1,5 @@
 //Lists of constants that should only be modified in the source code
-var UPDATE_INTERVAL = 100;
+var UPDATE_INTERVAL = 2000;
 var RECT_SIZE = 10;
 
 
@@ -14,8 +14,8 @@ function startGame()
 	var cvs = document.getElementById("theCanvas");
 	if(goFullScreen(cvs))
 	{
-		//document.getElementById("theCanvas").width = window.innerWidth;//TODO this shouldn't be window
-		//document.getElementById("theCanvas").height = window.innerHeight;
+		document.getElementById("theCanvas").width = window.innerWidth;//TODO this shouldn't be window
+		document.getElementById("theCanvas").height = window.innerHeight;
 	}
 	setInitialState();
 	cvs.addEventListener("mousedown", getMousePos, false);
@@ -25,8 +25,7 @@ function startGame()
 function update()
 {
 	drawRects(alive);
-	//calcChange(aliveX, aliveY);
-	//drawAlive(aliveX, aliveY);
+	calcChange(alive);
 }
 
 function drawRects(alive)
@@ -78,10 +77,13 @@ function setInitialState()
 		for(var j = 0; (j*RECT_SIZE) < document.getElementById("theCanvas").height; j++)
 		{
 			//alive[i][j] = 0;
-			alive[i].push(0);
+			alive[i][j] = 0;
 		}
 	}
 	alive[20][40] = 1;
+	alive[21][40] = 1;
+	alive[21][41] = 1;
+	alive[20][41] = 1;
 	alive[30][90] = 1;
 	alive[50][80] = 1;
 	alive[34][40] = 1;
@@ -89,35 +91,50 @@ function setInitialState()
 	alive[24][60] = 1;
 	alive[28][40] = 1;
 }
-/**
-TODO: This function is very unoptimized
-function calcChange(aliveX, aliveY)
+
+function calcChange(alive)
 {
-	for(int i = 0; i < aliveX.length; i++)
+	for(var i = 0; i < alive.length; i++)
 	{
-		var nCount = 0;//the amount of neighbors this cell has
-		var x = aliveX[i];
-		var y = aliveY[i];
-		if(x > 0)//finding state of the left 3 neighbors
+		for(var j = 0; j < alive[i].length; j++)
 		{
-			for(int j = 0; j < aliveX.length; j++)//go through all the cells looking for the left 3 neighbors
+			var count = countNeighbors(alive, i, j);
+			if(count < 2)//rule 1
 			{
-				var left = [0,0,0];
-				if(aliveX[j] = x-1 && ((y-1) <= aliveY[j] <= (y+1))
-				{
-					nCount++;
-					left[aliveX[j] - y + 1];
-
-				}
+				alive[i][j] = 0;
 			}
-		}
-		if(y > 0)
-		{
-
+			if(count == 3)//rule 4
+			{
+				console.log("Leaving a block alive");
+				alive[i][j] = 1;
+			}
+			if(count > 3)
+			{
+				alive[i][j] = 0;
+			}
 		}
 	}
 }
-*/
+
+function countNeighbors(alive, x, y)
+{
+	var count = 0;
+	for(var f = parseInt(x - 1); f < parseInt(x +1); f++)
+	{
+		for(var j = parseInt(y-1); j < parseInt(y+1); j++)
+		{
+			if(((f!=x && j!=y)) && (f > 0) && (f < alive.length) && (j >0) && (j < alive[f].length))//edge cases 
+			{
+				count = count + (alive[f][j]);
+				if(alive[f][j] == 1)
+				{
+					console.log(count);
+				}
+			}
+		}
+	}
+	return count;
+}
 function goFullScreen(i)
 {
 	if (i.requestFullscreen) 
